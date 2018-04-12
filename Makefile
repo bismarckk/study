@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 EXEC = factorial.o hello.o
-CXXFLAGS = -O0 -Wall -pedantic -I. -g
+CXXFLAGS = -O0 -Wall  -I. -g
 LDFLAGS = -g -L.
 
 main: main.cpp libtest.a

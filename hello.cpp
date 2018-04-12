@@ -3,7 +3,7 @@
 
 
 void print_hello(){
-      int i;
+      
       using namespace std;
       cout << "Hello World!"<<endl;
       cout <<sizeof(int)<<endl;
