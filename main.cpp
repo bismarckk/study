@@ -15,20 +15,16 @@ int main(int argc, char *argv[]){
       clock_t processtime;
       processtime = times(&buf);
 
+      
+      ///////funkcja execve... otwiera program ktory dziedziczy pid juz nie powraca do funkcji
       char *newargv[] = { NULL, "hello", "world", NULL };
       char *newenviron[] = { NULL };
       cout<<argv[0]<<endl;
-
-      newargv[0] = argv[1];
-
-      execve(argv[1], newargv, newenviron);
+      // newargv[0] = argv[1];
+      // cout<<getppid()<<std::endl;
+      // execve(argv[1], newargv, newenviron);
       
-
-
-
-
-
-
+      
       
       // char *const argv[] = {"/bin/sh", "-c", "env",0};
       // char *const envp[] = {
@@ -61,18 +57,23 @@ int main(int argc, char *argv[]){
       cout<<buf.tms_stime<<endl;
       cout<<buf.tms_utime<<endl;
       cout <<"System time w s: "<<(double) buf.tms_stime/sysconf(_SC_CLK_TCK)<<endl;
-      cout <<"User time w s: " <<(double) buf.tms_utime/sysconf(_SC_CLK_TCK)<<endl;          
-      
+      cout <<"User time w s: " <<(double) buf.tms_utime/sysconf(_SC_CLK_TCK)<<endl;    
       cout<<"\nParent pid przed fork "<<getpid()<<endl<<endl;
 
       // ###fork wykonuje parent i rozpoczyna child a vfork zawiesza parent i czeka az child zostanie zakonczony i dopiero konczy parent
-      pidChild = vfork();      
       cout<<"tu zaczyna sie vfork()\n";
+      pidChild = vfork();    
+      
       if(pidChild == 0)
       {            
             cout<<"\nchild process \"0\"\n";
             cout<<"proces biezacy "<<getpid()<<endl;
-            cout<<"proces macierzysty "<<getppid()<<endl;  
+            cout<<"proces macierzysty "<<getppid()<<endl;
+
+            cout<<argv[0]<<endl;
+            newargv[0] = argv[1];
+            cout<<getppid()<<std::endl;
+            execve(argv[1], newargv, newenviron);  
             
             cout<<"\ntu zaczyna sie fork()\n";
             pidChild1 = fork();
