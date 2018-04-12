@@ -2,6 +2,7 @@
 #include <iostream>
 //#include <dlfnc.h>
 #include<sys/types.h>
+#include<sys/times.h>
 #include<unistd.h>
 #include "functions.h"
 using namespace std;
@@ -9,54 +10,79 @@ using namespace std;
 
 int main(){
 
-      //pid_t pid1=0;
-      int *i = new int[5];
-
-      print_hello();
-      cout<<endl;
-      cout << "The factorial of 5 is " << factorial(5) << endl;
-      *i = 3;
-      i[1]=1;
-      cout<<i[1]<<endl;
-      shrink(i);
-      cout<<i[1]<<*i<<i[0]<<endl;
-      delete i;
-      // pid1 = fork();
-      // cout<<getpid()<<pid1<<endl;
-      // cout<<"czy to bedzie to? "<<pid1<<endl;
-      //pid1 =fork();
-      //cout<<"czy to bedzie to? "<<pid1<<endl;      
-      cin >> i[2];
-
-      pid_t pid1, pid2, pid3;
-      pid1=0, pid2=0, pid3=0;
-      pid1= fork(); 
-      cout<<"pid 1: "<<pid1<<endl;
+      pid_t pidChild, pidChild1;
+      tms buf;
+      clock_t processtime;
+      processtime = times(&buf);
       
-      if(pid1==0){
-            pid2=fork();
-        pid3=fork(); 
-        cout<<"pid 3: "<<pid3<<endl;
-      } else {
-            pid3=fork(); 
-            cout<<"pid 3: "<<pid3<<endl;
-            if(pid3==0) {
-                  pid2=fork(); 
+      
+      // int *i = new int[5];
+
+      // print_hello();
+      // cout<<endl;
+      // cout << "The factorial of 5 is " << factorial(5) << endl;
+      // *i = 3;
+      // i[1]=1;
+      // cout<<i[1]<<endl;
+      // shrink(i);
+      // cout<<i[1]<<*i<<i[0]<<endl;
+      // delete i;
+
+      // ###ilosc taktow zegara podzielona na ilosc taktow w sekundzie ale nic nie zwraca
+      for (int i =0, a=0;i<100000;i++){a+=i;}
+      processtime = times(&buf);
+      cout<<buf.tms_stime<<endl;
+      cout<<buf.tms_utime<<endl;
+      cout <<"System time w s: "<<(double) buf.tms_stime/sysconf(_SC_CLK_TCK)<<endl;
+      cout <<"User time w s: " <<(double) buf.tms_utime/sysconf(_SC_CLK_TCK)<<endl;          
+      
+      cout<<"\nParent pid przed fork "<<getpid()<<endl<<endl;
+
+      // ###fork wykonuje parent i rozpoczyna child a vfork zawiesza parent i czeka az child zostanie zakonczony
+      pidChild = vfork();      
+      cout<<"tu zaczyna sie vfork()\n";
+      if(pidChild == 0)
+      {            
+            cout<<"\nchild process \"0\"\n";
+            cout<<"proces biezacy "<<getpid()<<endl;
+            cout<<"proces macierzysty "<<getppid()<<endl;  
+            
+            pidChild1 = fork();
+            cout<<"tu zaczyna sie fork()\n";     
+            if(pidChild1 == 0)
+            {            
+                  cout<<"\nchild process \"1\"\n";
+                  cout<<"proces biezacy "<<getpid()<<endl;
+                  cout<<"proces macierzysty "<<getppid()<<endl;                 
+                        
             }
+            else if(pidChild1 < 0)
+            {  
+                  cout<<"failed child process\n";  
+            }
+            else if (pidChild1 > 0)
+            {                  
+                  cout<<"\nParent process \"1\"\n";
+                  cout<<"Child Pid  "<<pidChild1<<endl;
+                  cout<<"proces biezacy pid "<<getpid()<<endl;
+                  cout<<"proces macierzysty pid "<<getppid()<<endl;                   
+            }              
             
-            if((pid1 == 0)&&(pid2 == 0))
-                 cout <<pid1<<" level1\n";
-            
-            if(pid1 !=0)
-                  cout <<pid1<<" level2\n";
-            
-            if(pid2 !=0)
-                  cout <<pid2<<" level3\n";
-            
-            if(pid3 !=0)
-                  cout <<pid3<<" level4\n";      
-    
+            _exit(0);    
       }
+      else if(pidChild < 0)
+      {  
+            cout<<"failed child process\n";  
+      }
+      else if (pidChild > 0)
+      {                  
+            cout<<"\nParent process \"0\"\n";
+            cout<<"Child Pid  "<<pidChild<<endl;
+            cout<<"proces biezacy pid "<<getpid()<<endl;
+            cout<<"proces macierzysty bash tu akuart "<<getppid()<<endl;                   
+      }
+      
+      
       
       return 0;
 }
