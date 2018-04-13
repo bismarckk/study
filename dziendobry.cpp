@@ -8,6 +8,6 @@ int main(int argc, char *argv[])
       std::cout<<getppid()<<std::endl;
       for (int i =1;i<argc;i++){
             std::cout<<argv[i]<<std::endl;
-            argv[i]="psss!!!";
+            //argv[i]="psss!!!";
       }
 }

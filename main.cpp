@@ -70,8 +70,8 @@ int main(int argc, char *argv[]){
             cout<<"proces biezacy "<<getpid()<<endl;
             cout<<"proces macierzysty "<<getppid()<<endl;
 
-            cout<<argv[0]<<endl;
-            newargv[0] = argv[1];
+            // cout<<argv[0]<<endl;
+            // newargv[0] = argv[1];
             cout<<getppid()<<std::endl;
             execve(argv[1], newargv, newenviron);  
             
