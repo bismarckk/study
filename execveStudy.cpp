@@ -6,28 +6,35 @@
 #include<sys/wait.h>
 void sig_handler(int mySignal);
 void studyAtExit();
+void sig_chld (int mysignal);
 
 int main (int argc, char *argv[])
 {
+      
+      
       pid_t newProc;
-      char *pathToSh[] ={"sh", NULL};
-      char *newargv[] = { NULL };
+      char *pathToSh[] ={"ls", NULL};
+      char *newargv[] = { "ls","-la",NULL };
 
       if(signal(SIGINT, sig_handler)==SIG_ERR);
-      signal(SIGCHLD,sig_handler);
-      atexit(studyAtExit);
       
-      std::cout<<"to jest moj bash: ";
-       
-            newProc = fork();
+      atexit(studyAtExit);
+                  
+            newProc=fork();
             if (newProc==0)
-            {     
-                  std::cout<<"dziecko";                                     
-                  //execvp(pathToSh[0], newargv);
-                             
+            {    
+                  
+                  //kill(getpid(),SIGKILL); 
+                  std::cout<<"\ndziecko";                                     
+                  execvp(pathToSh[0], newargv);
+                  exit(0);       
+            }else if (newProc>0)
+            {
+                  newProc=wait(NULL);
             }
-
-      std::cin.get();
+            
+      std::cout<<"parent";
+     
        
       return 0;
 }
@@ -37,12 +44,16 @@ void sig_handler(int mySignal)
       if(mySignal==SIGINT)
       {
             std::cout<<"i get signal\n";
-      }
-
-      pid_t pid;
-      pid = wait(NULL);
-
+      }                
+      
 }
+void sig_chld (int mysignal)
+{
+       pid_t pid;
+            int status;
+            pid = wait(&status); 
+}
+
 
 void studyAtExit()
 {
