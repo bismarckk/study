@@ -1,9 +1,10 @@
-
 #include <iostream>
 //#include <dlfnc.h>
 #include<sys/types.h>
 #include<sys/times.h>
 #include<unistd.h>
+#include <signal.h>
+#include<stdlib.h>
 #include "functions.h"
 using namespace std;
 
@@ -20,23 +21,7 @@ int main(int argc, char *argv[]){
       char *newargv[] = { NULL, "hello", "world", NULL };
       char *newenviron[] = { NULL };
       cout<<argv[0]<<endl;
-      // newargv[0] = argv[1];
-      // cout<<getppid()<<std::endl;
-      // execve(argv[1], newargv, newenviron);
-      
-      
-      
-      // char *const argv[] = {"/bin/sh", "-c", "env",0};
-      // char *const envp[] = {
-      //       "HOME=/",
-      //       "PATH=/bin:/usr/bin",
-      //       "TZ=UTC0",
-      //       "USER=sypniewski",
-      //       "LONGNAME=hejka",
-      //       0
-      // };      
-      // execve(argv[0], &argv[0], envp);
-      
+        
       
       // int *i = new int[5];
       // print_hello();
@@ -60,6 +45,13 @@ int main(int argc, char *argv[]){
       cout <<"User time w s: " <<(double) buf.tms_utime/sysconf(_SC_CLK_TCK)<<endl;    
       cout<<"\nParent pid przed fork "<<getpid()<<endl<<endl;
 
+
+      if(signal(SIGINT, sig_handler)==SIG_ERR);
+      signal(SIGCHLD,SIG_IGN);
+            
+      //sleep(5);
+      
+      
       // ###fork wykonuje parent i rozpoczyna child a vfork zawiesza parent i czeka az child zostanie zakonczony i dopiero konczy parent
       cout<<"tu zaczyna sie vfork()\n";
       pidChild = vfork();    
@@ -70,8 +62,7 @@ int main(int argc, char *argv[]){
             cout<<"proces biezacy "<<getpid()<<endl;
             cout<<"proces macierzysty "<<getppid()<<endl;
 
-            // cout<<argv[0]<<endl;
-            // newargv[0] = argv[1];
+            
             cout<<getppid()<<std::endl;
             execve(argv[1], newargv, newenviron);  
             
@@ -82,7 +73,10 @@ int main(int argc, char *argv[]){
             {            
                   cout<<"\nchild process \"1\"\n";
                   cout<<"proces biezacy "<<getpid()<<endl;
-                  cout<<"proces macierzysty "<<getppid()<<endl;                 
+                  cout<<"proces macierzysty "<<getppid()<<endl;
+                  
+                  atexit(studyAtExit);
+                  exit(0);         
                         
             }
             else if(pidChild1 < 0)
